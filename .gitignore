@@ -1,0 +1,8 @@
+/.idea/
+/_ReSharper.Caches/
+/input/
+/packages/
+bin/
+obj/
+AoC2024.sln
+riderModule.iml
