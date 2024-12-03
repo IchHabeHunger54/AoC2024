@@ -9,7 +9,7 @@ public abstract class Day(int dayNumber)
 
     private static Day GetDay()
     {
-        return new Day2();
+        return new Day3();
     }
 
     private static List<string> ReadLines(string path)
