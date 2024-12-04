@@ -58,6 +58,43 @@ public class Day4() : Day(4)
 
     protected override int TaskTwo(List<string> lines)
     {
-        throw new NotImplementedException();
+        int result = 0;
+        for (int i = 1; i < lines.Count - 1; i++)
+        {
+            string line = lines[i];
+            for (int j = 1; j < line.Length - 1; j++)
+            {
+                if (line[j] != 'A') continue;
+                // M.M
+                // .A.
+                // S.S
+                if (lines[i - 1][j - 1] == 'M' && lines[i - 1][j + 1] == 'M' && lines[i + 1][j - 1] == 'S' && lines[i + 1][j + 1] == 'S')
+                {
+                    result++;
+                }
+                // S.M
+                // .A.
+                // S.M
+                if (lines[i - 1][j - 1] == 'S' && lines[i - 1][j + 1] == 'M' && lines[i + 1][j - 1] == 'S' && lines[i + 1][j + 1] == 'M')
+                {
+                    result++;
+                }
+                // S.S
+                // .A.
+                // M.M
+                if (lines[i - 1][j - 1] == 'S' && lines[i - 1][j + 1] == 'S' && lines[i + 1][j - 1] == 'M' && lines[i + 1][j + 1] == 'M')
+                {
+                    result++;
+                }
+                // M.S
+                // .A.
+                // M.S
+                if (lines[i - 1][j - 1] == 'M' && lines[i - 1][j + 1] == 'S' && lines[i + 1][j - 1] == 'M' && lines[i + 1][j + 1] == 'S')
+                {
+                    result++;
+                }
+            }
+        }
+        return result;
     }
 }
