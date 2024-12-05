@@ -21,8 +21,14 @@ public abstract class Day(int dayNumber)
 
     private void Run()
     {
-        Console.WriteLine("Day " + dayNumber + ", Task 1: " + TaskOne(ReadLines("day_" + dayNumber + "_task_1.txt")));
-        Console.WriteLine("Day " + dayNumber + ", Task 2: " + TaskTwo(ReadLines("day_" + dayNumber + "_task_2.txt")));
+        DateTime startTime = DateTime.Now;
+        int task1 = TaskOne(ReadLines("day_" + dayNumber + "_task_1.txt"));
+        DateTime endTime = DateTime.Now;
+        Console.WriteLine("Day " + dayNumber + ", Task 1: " + task1 + " - took " + (endTime - startTime).TotalMilliseconds + " milliseconds");
+        startTime = DateTime.Now;
+        int task2 = TaskTwo(ReadLines("day_" + dayNumber + "_task_2.txt"));
+        endTime = DateTime.Now;
+        Console.WriteLine("Day " + dayNumber + ", Task 2: " + task2 + " - took " + (endTime - startTime).TotalMilliseconds + " milliseconds");
     }
 
     protected abstract int TaskOne(List<string> lines);
