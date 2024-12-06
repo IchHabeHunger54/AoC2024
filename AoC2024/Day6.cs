@@ -6,18 +6,8 @@ public class Day6() : Day(6)
     {
         int sizeX = lines[0].Length;
         int sizeY = lines.Count;
-        (int x, int y) guard = (-1, -1);
+        (int x, int y) guard = GetGuard(lines);
         Direction direction = Direction.Up;
-        for (int y = 0; y < lines.Count; y++)
-        {
-            for (int x = 0; x < lines[y].Length; x++)
-            {
-                if (lines[y][x] == '^')
-                {
-                    guard = (x, y);
-                }
-            }
-        }
         HashSet<(int x, int y)> result = [guard];
         while (guard is { x: > -1, y: > -1 } && guard.x < sizeX && guard.y < sizeY)
         {
@@ -68,7 +58,7 @@ public class Day6() : Day(6)
                     }
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(lines));
             }
         }
         return result.Count - 1;
@@ -76,7 +66,108 @@ public class Day6() : Day(6)
 
     protected override int TaskTwo(List<string> lines)
     {
-        throw new NotImplementedException();
+        List<List<string>> obstacles = [];
+        for (int i = 0; i < lines.Count; i++)
+        {
+            for (int j = 0; j < lines[i].Length; j++)
+            {
+                if (lines[i][j] != '.') continue;
+                List<string> obstacle = [..lines];
+                obstacle[i] = obstacle[i][..j] + 'O' + obstacle[i][(j + 1)..];
+                obstacles.Add(obstacle);
+            }
+        }
+        return obstacles.Count(IsLoop);
+    }
+
+    private static (int x, int y) GetGuard(List<string> lines)
+    {
+        for (int y = 0; y < lines.Count; y++)
+        {
+            for (int x = 0; x < lines[y].Length; x++)
+            {
+                if (lines[y][x] == '^')
+                {
+                    return (x, y);
+                }
+            }
+        }
+        return (-1, -1);
+    }
+
+    private static bool IsLoop(List<string> lines)
+    {
+        int sizeX = lines[0].Length;
+        int sizeY = lines.Count;
+        (int x, int y) guard = GetGuard(lines);
+        PositionAndDirection current = new(guard.x, guard.y, Direction.Up);
+        HashSet<PositionAndDirection> result = [current];
+        while (current is { X: > -1, Y: > -1 } && current.X < sizeX && current.Y < sizeY)
+        {
+            switch (current.Direction)
+            {
+                case Direction.Up:
+                    if (current.Y > 0 && lines[current.Y - 1][current.X] is '#' or 'O')
+                    {
+                        current = current with { Direction = Direction.Right };
+                    }
+                    else
+                    {
+                        current = current with { Y = current.Y - 1 };
+                    }
+                    break;
+                case Direction.Down:
+                    if (current.Y < sizeY - 1 && lines[current.Y + 1][current.X] is '#' or 'O')
+                    {
+                        current = current with { Direction = Direction.Left };
+                    }
+                    else
+                    {
+                        current = current with { Y = current.Y + 1 };
+                    }
+                    break;
+                case Direction.Left:
+                    if (current.X > 0 && lines[current.Y][current.X - 1] is '#' or 'O')
+                    {
+                        current = current with { Direction = Direction.Up };
+                    }
+                    else
+                    {
+                        current = current with { X = current.X - 1 };
+                    }
+                    break;
+                case Direction.Right:
+                    if (current.X < sizeX - 1 && lines[current.Y][current.X + 1] is '#' or 'O')
+                    {
+                        current = current with { Direction = Direction.Down };
+                    }
+                    else
+                    {
+                        current = current with { X = current.X + 1 };
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lines));
+            }
+            if (!result.Add(current))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private record PositionAndDirection(int X, int Y, Direction Direction)
+    {
+        public virtual bool Equals(PositionAndDirection? other)
+        {
+            return other != null && X == other.X && Y == other.Y && Direction == other.Direction;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y, (int) Direction);
+        }
     }
 
     private enum Direction
