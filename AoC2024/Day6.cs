@@ -66,18 +66,22 @@ public class Day6() : Day(6)
 
     protected override int TaskTwo(List<string> lines)
     {
-        List<List<string>> obstacles = [];
+        (int x, int y) guard = GetGuard(lines);
+        int result = 0;
         for (int i = 0; i < lines.Count; i++)
         {
             for (int j = 0; j < lines[i].Length; j++)
             {
                 if (lines[i][j] != '.') continue;
-                List<string> obstacle = [..lines];
-                obstacle[i] = obstacle[i][..j] + 'O' + obstacle[i][(j + 1)..];
-                obstacles.Add(obstacle);
+                lines[i] = lines[i][..j] + 'O' + lines[i][(j + 1)..];
+                if (IsLoop(lines, guard.x, guard.y))
+                {
+                    result++;
+                }
+                lines[i] = lines[i][..j] + '.' + lines[i][(j + 1)..];
             }
         }
-        return obstacles.Count(IsLoop);
+        return result;
     }
 
     private static (int x, int y) GetGuard(List<string> lines)
@@ -95,12 +99,11 @@ public class Day6() : Day(6)
         return (-1, -1);
     }
 
-    private static bool IsLoop(List<string> lines)
+    private static bool IsLoop(List<string> lines, int guardX, int guardY)
     {
         int sizeX = lines[0].Length;
         int sizeY = lines.Count;
-        (int x, int y) guard = GetGuard(lines);
-        PositionAndDirection current = new(guard.x, guard.y, Direction.Up);
+        PositionAndDirection current = new(guardX, guardY, Direction.Up);
         HashSet<PositionAndDirection> result = [current];
         while (current is { X: > -1, Y: > -1 } && current.X < sizeX && current.Y < sizeY)
         {
