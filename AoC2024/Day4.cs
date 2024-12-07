@@ -2,7 +2,7 @@
 
 public class Day4() : Day(4)
 {
-    protected override int TaskOne(List<string> lines)
+    protected override long TaskOne(List<string> lines)
     {
         int result = 0;
         for (int i = 0; i < lines.Count; i++)
@@ -56,7 +56,7 @@ public class Day4() : Day(4)
         return result;
     }
 
-    protected override int TaskTwo(List<string> lines)
+    protected override long TaskTwo(List<string> lines)
     {
         int result = 0;
         for (int i = 1; i < lines.Count - 1; i++)

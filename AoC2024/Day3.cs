@@ -2,7 +2,7 @@
 
 public class Day3() : Day(3)
 {
-    protected override int TaskOne(List<string> lines)
+    protected override long TaskOne(List<string> lines)
     {
         string line = lines.Aggregate("", (current, s) => current + s);
         int sum = 0;
@@ -58,7 +58,7 @@ public class Day3() : Day(3)
         return sum;
     }
 
-    protected override int TaskTwo(List<string> lines)
+    protected override long TaskTwo(List<string> lines)
     {
         string line = lines.Aggregate("", (current, s) => current + s);
         int sum = 0;

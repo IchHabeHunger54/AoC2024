@@ -2,7 +2,7 @@
 
 public class Day1() : Day(1)
 {
-    protected override int TaskOne(List<string> lines)
+    protected override long TaskOne(List<string> lines)
     {
         List<string[]> data = lines.Select(x => x.Split("   ")).ToList();
         List<int> left = data.Select(x => x[0]).Select(int.Parse).ToList();
@@ -12,7 +12,7 @@ public class Day1() : Day(1)
         return left.Select((t, i) => Math.Abs(t - right[i])).Sum();
     }
 
-    protected override int TaskTwo(List<string> lines)
+    protected override long TaskTwo(List<string> lines)
     {
         List<string[]> data = lines.Select(x => x.Split("   ")).ToList();
         List<int> left = data.Select(x => x[0]).Select(int.Parse).ToList();

@@ -2,7 +2,7 @@
 
 public class Day5() : Day(5)
 {
-    protected override int TaskOne(List<string> lines)
+    protected override long TaskOne(List<string> lines)
     {
         int i = 0;
         List<(int before, int after)> pages = [];
@@ -19,7 +19,7 @@ public class Day5() : Day(5)
         return orders.Where(order => IsValid(pages, order)).Sum(order => order[order.Count / 2]);
     }
 
-    protected override int TaskTwo(List<string> lines)
+    protected override long TaskTwo(List<string> lines)
     {
         int i = 0;
         List<(int before, int after)> pages = [];

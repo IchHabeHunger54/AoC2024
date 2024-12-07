@@ -2,12 +2,12 @@
 
 public class Day6() : Day(6)
 {
-    protected override int TaskOne(List<string> lines)
+    protected override long TaskOne(List<string> lines)
     {
         return GetPositions(lines).ToList().Count - 1;
     }
 
-    protected override int TaskTwo(List<string> lines)
+    protected override long TaskTwo(List<string> lines)
     {
         List<(int x, int y)> positions = GetPositions(lines).ToList();
         (int x, int y) guard = GetGuard(lines);
@@ -106,7 +106,7 @@ public class Day6() : Day(6)
         return false;
     }
 
-    private static IEnumerable<(int x, int y)> GetPositions(List<string> lines)
+    protected virtual IEnumerable<(int x, int y)> GetPositions(List<string> lines)
     {
         int sizeX = lines[0].Length;
         int sizeY = lines.Count;

@@ -2,7 +2,7 @@
 
 public class Day7() : Day(7)
 {
-    protected override int TaskOne(List<string> lines)
+    protected override long TaskOne(List<string> lines)
     {
         long result = 0;
         foreach (string line in lines)
@@ -12,14 +12,10 @@ public class Day7() : Day(7)
             long[] right = tokens[1..].Select(long.Parse).ToArray();
             if (CanGiveResultOne(right[0], right[1..], left)) result += left;
         }
-        if (result > int.MaxValue)
-        {
-            Console.WriteLine($"Long value result: {result}");
-        }
-        return (int) result;
+        return result;
     }
 
-    protected override int TaskTwo(List<string> lines)
+    protected override long TaskTwo(List<string> lines)
     {
         long result = 0;
         foreach (string line in lines)
@@ -29,11 +25,7 @@ public class Day7() : Day(7)
             long[] right = tokens[1..].Select(long.Parse).ToArray();
             if (CanGiveResultTwo(right[0], right[1..], left)) result += left;
         }
-        if (result > int.MaxValue)
-        {
-            Console.WriteLine($"Long value result: {result}");
-        }
-        return (int) result;
+        return result;
     }
 
     private static bool CanGiveResultOne(long first, long[] others, long result)

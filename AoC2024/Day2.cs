@@ -2,12 +2,12 @@
 
 public class Day2() : Day(2)
 {
-    protected override int TaskOne(List<string> lines)
+    protected override long TaskOne(List<string> lines)
     {
         return lines.Select(x => x.Split(' ').Select(int.Parse).ToList()).Sum(t => CheckRow(t) ? 1 : 0);
     }
 
-    protected override int TaskTwo(List<string> lines)
+    protected override long TaskTwo(List<string> lines)
     {
         List<List<int>> grid = lines.Select(x => x.Split(' ').Select(int.Parse).ToList()).ToList();
         int result = 0;

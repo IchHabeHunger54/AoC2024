@@ -22,16 +22,16 @@ public abstract class Day(int dayNumber)
     private void Run()
     {
         DateTime startTime = DateTime.Now;
-        int task1 = TaskOne(ReadLines("day_" + dayNumber + "_task_1.txt"));
+        long task1 = TaskOne(ReadLines("day_" + dayNumber + "_task_1.txt"));
         DateTime endTime = DateTime.Now;
-        Console.WriteLine("Day " + dayNumber + ", Task 1: " + task1 + " - took " + (endTime - startTime).TotalMilliseconds + " milliseconds");
+        Console.WriteLine($"Day {dayNumber}, Task 1: {task1} - took {(endTime - startTime).TotalMilliseconds} milliseconds");
         startTime = DateTime.Now;
-        int task2 = TaskTwo(ReadLines("day_" + dayNumber + "_task_2.txt"));
+        long task2 = TaskTwo(ReadLines("day_" + dayNumber + "_task_2.txt"));
         endTime = DateTime.Now;
-        Console.WriteLine("Day " + dayNumber + ", Task 2: " + task2 + " - took " + (endTime - startTime).TotalMilliseconds + " milliseconds");
+        Console.WriteLine($"Day {dayNumber}, Task 2: {task2} - took {(endTime - startTime).TotalMilliseconds} milliseconds");
     }
 
-    protected abstract int TaskOne(List<string> lines);
+    protected abstract long TaskOne(List<string> lines);
 
-    protected abstract int TaskTwo(List<string> lines);
+    protected abstract long TaskTwo(List<string> lines);
 }
