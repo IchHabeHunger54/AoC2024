@@ -10,7 +10,7 @@ public abstract class Day(int dayNumber)
 
     private static Day GetDay()
     {
-        return new Day9();
+        return new Day10();
     }
 
     private static void RunAll()
