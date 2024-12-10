@@ -4,31 +4,56 @@ public class Day10() : Day(10)
 {
     protected override long TaskOne(List<string> lines)
     {
-        List<List<int>> grid = [];
-        foreach (string line in lines)
-        {
-            List<int> list = [];
-            list.AddRange(line.Select(c => c - '0'));
-            grid.Add(list);
-        }
+        List<List<int>> grid = ToListListInt(lines);
         int result = 0;
         for (int y = 0; y < grid.Count; y++)
         {
             for (int x = 0; x < grid[y].Count; x++)
             {
-                if (grid[y][x] == 0)
-                {
-                    result += GetTrailScore(grid, [], y, x);
-                }
+                if (grid[y][x] != 0) continue;
+                HashSet<(int, int)> reached = [];
+                GetTrailScore(grid, reached, y, x);
+                result += reached.Count;
             }
         }
         return result;
     }
 
+    protected override long TaskTwo(List<string> lines)
+    {
+        List<List<int>> grid = ToListListInt(lines);
+        int result = 0;
+        for (int y = 0; y < grid.Count; y++)
+        {
+            for (int x = 0; x < grid[y].Count; x++)
+            {
+                if (grid[y][x] != 0) continue;
+                result += GetTrailScore(grid, [], y, x);
+            }
+        }
+        return result;
+    }
+
+    private static List<List<int>> ToListListInt(List<string> lines)
+    {
+        List<List<int>> result = [];
+        foreach (string line in lines)
+        {
+            List<int> list = [];
+            list.AddRange(line.Select(c => c - '0'));
+            result.Add(list);
+        }
+        return result;
+    }
+    
     private static int GetTrailScore(List<List<int>> grid, HashSet<(int x, int y)> reached, int y, int x)
     {
         int current = grid[y][x];
-        if (current == 9) return reached.Add((x, y)) ? 1 : 0;
+        if (current == 9)
+        {
+            reached.Add((x, y));
+            return 1;
+        }
         int next = current + 1;
         int result = 0;
         // up
@@ -52,10 +77,5 @@ public class Day10() : Day(10)
             result += GetTrailScore(grid, reached, y, x + 1);
         }
         return result;
-    }
-    
-    protected override long TaskTwo(List<string> lines)
-    {
-        throw new NotImplementedException();
     }
 }
