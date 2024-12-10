@@ -4,12 +4,22 @@ public abstract class Day(int dayNumber)
 {
     public static void Main()
     {
+        //RunAll();
         GetDay().Run();
     }
 
     private static Day GetDay()
     {
         return new Day9();
+    }
+
+    private static void RunAll()
+    {
+        Day[] days = [new Day1(), new Day2(), new Day3(), new Day4(), new Day5(), new Day6(), new Day7(), new Day8(), new Day9()];
+        foreach (Day day in days)
+        {
+            day.Run();
+        }
     }
 
     private static List<string> ReadLines(string path)
