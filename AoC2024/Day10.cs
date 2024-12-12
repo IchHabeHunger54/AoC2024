@@ -1,4 +1,6 @@
-﻿namespace AoC2024;
+﻿using AoC2024.util;
+
+namespace AoC2024;
 
 public class Day10() : Day(10)
 {
@@ -11,7 +13,7 @@ public class Day10() : Day(10)
             for (int x = 0; x < grid[y].Count; x++)
             {
                 if (grid[y][x] != 0) continue;
-                HashSet<(int, int)> reached = [];
+                HashSet<Position> reached = [];
                 GetTrailScore(grid, reached, y, x);
                 result += reached.Count;
             }
@@ -46,12 +48,12 @@ public class Day10() : Day(10)
         return result;
     }
     
-    private static int GetTrailScore(List<List<int>> grid, HashSet<(int x, int y)> reached, int y, int x)
+    private static int GetTrailScore(List<List<int>> grid, HashSet<Position> reached, int y, int x)
     {
         int current = grid[y][x];
         if (current == 9)
         {
-            reached.Add((x, y));
+            reached.Add(new Position(x, y));
             return 1;
         }
         int next = current + 1;
