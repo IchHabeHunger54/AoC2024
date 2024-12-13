@@ -2,53 +2,16 @@
 
 public class Day13() : Day(13)
 {
-    private const int MaxPresses = 100;
-    
     protected override long TaskOne(List<string> lines)
     {
         long result = 0;
         for (int i = 0; i < lines.Count; i += 4)
         {
-            // Button A
-            string line = lines[i];
-            string[] split = line.Split("X+")[1].Split(",");
-            int xa = int.Parse(split[0]);
-            int ya = int.Parse(split[1].Split("Y+")[1]);
-            // Button B
-            line = lines[i + 1];
-            split = line.Split("X+")[1].Split(",");
-            int xb = int.Parse(split[0]);
-            int yb = int.Parse(split[1].Split("Y+")[1]);
-            // Prize
-            line = lines[i + 2];
-            split = line.Split("X=")[1].Split(",");
-            int xp = int.Parse(split[0]);
-            int yp = int.Parse(split[1].Split("Y=")[1]);
-            // If we cannot reach x/y by pressing both buttons 100 times each, skip.
-            if (xa * MaxPresses + xb * MaxPresses < xp) continue;
-            if (ya * MaxPresses + yb * MaxPresses < yp) continue;
-            // Solve the linalg system.
-            int bestScore = MaxPresses * 4 + 1;
-            for (int j = 0; j < MaxPresses; j++)
+            (long xa, long ya, long xb, long yb, long xr, long yr) = ParseLinAlgSystem(lines[i], lines[i + 1], lines[i + 2]);
+            long? l = SolveLinAlgSystem(xa, ya, xb, yb, xr, yr);
+            if (l.HasValue)
             {
-                // Try using only button A.
-                int ax = xp - xa * j;
-                int ay = yp - ya * j;
-                if (ax < 0 || ay < 0) break;
-                // If we can't get the rest using button B, skip.
-                int bx = ax / xb;
-                int by = ay / yb;
-                if (ax % xb != 0 || bx >= MaxPresses || ay % yb != 0 || by >= MaxPresses || bx != by) continue;
-                // If the current values are smaller than the previous best, set new best.
-                int score = j * 3 + bx;
-                if (score < bestScore)
-                {
-                    bestScore = score;
-                }
-            }
-            if (bestScore < MaxPresses * 4)
-            {
-                result += bestScore;
+                result += l.Value;
             }
         }
         return result;
@@ -56,6 +19,41 @@ public class Day13() : Day(13)
 
     protected override long TaskTwo(List<string> lines)
     {
-        throw new NotImplementedException();
+        long result = 0;
+        for (int i = 0; i < lines.Count; i += 4)
+        {
+            (long xa, long ya, long xb, long yb, long xr, long yr) = ParseLinAlgSystem(lines[i], lines[i + 1], lines[i + 2]);
+            long? l = SolveLinAlgSystem(xa, ya, xb, yb, xr + 10000000000000, yr + 10000000000000);
+            if (l.HasValue)
+            {
+                result += l.Value;
+            }
+        }
+        return result;
+    }
+
+    private static long? SolveLinAlgSystem(long xa, long ya, long xb, long yb, long xr, long yr)
+    {
+        double b = (xa * yr - xr * ya) / (double) (xa * yb - xb * ya);
+        double a = (xr - b * xb) / xa;
+        return !double.IsInteger(b) || !double.IsInteger(a) ? null : 3 * (long)a + (long)b;
+    }
+    
+    private static (long xa, long ya, long xb, long yb, long xr, long yr) ParseLinAlgSystem(string equationA, string equationB, string result)
+    {
+        string[] split;
+        // Equation A
+        split = equationA.Split("X+")[1].Split(",");
+        long xa = long.Parse(split[0]);
+        long ya = long.Parse(split[1].Split("Y+")[1]);
+        // Equation B
+        split = equationB.Split("X+")[1].Split(",");
+        long xb = long.Parse(split[0]);
+        long yb = long.Parse(split[1].Split("Y+")[1]);
+        // Result
+        split = result.Split("X=")[1].Split(",");
+        long xr = long.Parse(split[0]);
+        long yr = long.Parse(split[1].Split("Y=")[1]);
+        return (xa, ya, xb, yb, xr, yr);
     }
 }
