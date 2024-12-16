@@ -28,25 +28,40 @@ public class Day16() : Day(16)
                 }
             }
         }
-        // We start at the "entrance" left to the start due to the Dijkstra impl, and remove that 1 extra move at the end.
-        return Dijkstra(positions, start + new Position(-1, 0), end) - 1;
+        return Dijkstra(positions.ToList(), start, end);
     }
 
     protected override long TaskTwo(List<string> lines)
     {
-        throw new NotImplementedException();
+        HashSet<Position> positions = [];
+        Position start = new(0, 0), end = new(0, 0);
+        for (int y = 0; y < lines.Count; y++)
+        {
+            string line = lines[y];
+            for (int x = 0; x < line.Length; x++)
+            {
+                char c = line[x];
+                if (c != '#')
+                {
+                    positions.Add(new Position(x, y));
+                }
+                if (c == 'S')
+                {
+                    start = new Position(x, y);
+                }
+                if (c == 'E')
+                {
+                    end = new Position(x, y);
+                }
+            }
+        }
+        List<List<Position>> dijkstraWithHistory = DijkstraWithHistory(positions.ToList(), start, end);
+        return dijkstraWithHistory.SelectMany(e => e).Distinct().Count();
     }
 
-    private static long Dijkstra(HashSet<Position> input, Position start, Position end)
+    private static long Dijkstra(List<Position> input, Position start, Position end)
     {
-        Dictionary<Position, long> positions = new();
-        foreach (Position position in input)
-        {
-            // We use long.MaxValue / 2 to avoid an overflow.
-            positions[position] = long.MaxValue / 2;
-        }
-        positions[start] = 0;
-        HashSet<PositionAndDirection> visited = [];
+        Dictionary<Position, long> positions = InitDijkstra(input, start);
         LinkedList<PositionAndDirection> queue = new();
         queue.AddFirst(new PositionAndDirection(start, Direction.Right));
         while (queue.Count > 0)
@@ -74,6 +89,48 @@ public class Day16() : Day(16)
             }
         }
         return positions[end];
+    }
+
+    private static List<List<Position>> DijkstraWithHistory(List<Position> input, Position start, Position end)
+    {
+        Dictionary<Position, long> positions = InitDijkstra(input, start);
+        LinkedList<PositionAndDirection> queue = new();
+        queue.AddFirst(new PositionAndDirection(start, Direction.Right));
+        Dictionary<Position, List<Position>> history = new();
+        List<List<Position>> result = [];
+        while (queue.Count > 0)
+        {
+            PositionAndDirection current = queue.First!.Value;
+            queue.RemoveFirst();
+            List<Position> currentHistory = history.GetValueOrDefault(current.Position, []);
+            if (current.Position == end)
+            {
+                result.Add([..currentHistory, current.Position]);
+                continue;
+            }
+            Position front = current.Position + GetDirectionStep(current.Direction);
+            if (input.Contains(front) && positions[front] >= positions[current.Position])
+            {
+                queue.AddFirst(current with { Position = front });
+                positions[front] = Math.Min(positions[front], positions[current.Position] + 1);
+                history[front] = [..currentHistory, current.Position];
+            }
+            Position right = current.Position + GetDirectionStep(RotateClockwise(current.Direction));
+            if (input.Contains(right) && positions[right] >= positions[current.Position])
+            {
+                queue.AddLast(new PositionAndDirection(right, RotateClockwise(current.Direction)));
+                positions[right] = Math.Min(positions[right], positions[current.Position] + 1001);
+                history[right] = [..currentHistory, current.Position];
+            }
+            Position left = current.Position + GetDirectionStep(RotateCounterClockwise(current.Direction));
+            if (input.Contains(left) && positions[left] >= positions[current.Position])
+            {
+                queue.AddLast(new PositionAndDirection(left, RotateCounterClockwise(current.Direction)));
+                positions[left] = Math.Min(positions[left], positions[current.Position] + 1001);
+                history[left] = [..currentHistory, current.Position];
+            }
+        }
+        return result;
     }
 
     private static Position GetDirectionStep(Direction direction)
@@ -115,5 +172,17 @@ public class Day16() : Day(16)
             Direction.Left => Direction.Down,
             _ => throw new ArgumentOutOfRangeException(nameof(direction))
         };
+    }
+
+    private static Dictionary<Position, long> InitDijkstra(List<Position> input, Position start)
+    {
+        Dictionary<Position, long> positions = new();
+        foreach (Position position in input)
+        {
+            // We use long.MaxValue / 2 to avoid an overflow.
+            positions[position] = long.MaxValue / 2;
+        }
+        positions[start] = 0;
+        return positions;
     }
 }
