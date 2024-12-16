@@ -11,4 +11,9 @@ public record Position(int x, int y)
     {
         return HashCode.Combine(x, y);
     }
+
+    public static Position operator +(Position a, Position b)
+    {
+        return new Position(a.x + b.x, a.y + b.y);
+    }
 }
