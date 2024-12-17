@@ -28,7 +28,7 @@ public class Day16() : Day(16)
                 }
             }
         }
-        return Dijkstra(positions.ToList(), start, end, Direction.Right, out _);
+        return Dijkstra(positions.ToList(), start, end).cost;
     }
 
     protected override long TaskTwo(List<string> lines)
@@ -55,71 +55,44 @@ public class Day16() : Day(16)
                 }
             }
         }
-        return MultiDijkstra(positions.ToList(), start, end).Count;
+        return Dijkstra(positions.ToList(), start, end).paths.SelectMany(e => e).Distinct().Count();
     }
 
-    private static long Dijkstra(List<Position> input, Position start, Position end, Direction startDirection, out Direction direction)
+    private static (long cost, List<List<Position>> paths) Dijkstra(List<Position> input, Position start, Position end)
     {
-        Dictionary<Position, long> positions = InitDijkstra(input, start);
-        LinkedList<PositionAndDirection> queue = new();
-        queue.AddFirst(new PositionAndDirection(start, startDirection));
-        direction = startDirection;
+        Queue<Node> queue = new();
+        queue.Enqueue(new Node(start, Direction.Right, 0, []));
+        HashSet<PositionAndDirection> visited = [];
+        long maxCost = long.MaxValue;
+        List<List<Position>> paths = [];
         while (queue.Count > 0)
         {
-            PositionAndDirection current = queue.First!.Value;
-            queue.RemoveFirst();
-            if (current.Position == end)
+            Node node = queue.Dequeue();
+            if (node.Cost > maxCost) break;
+            visited.Add(node.ToPositionAndDirection());
+            if (node.Position == end)
             {
-                direction = current.Direction;
+                maxCost = node.Cost;
+                paths.Add(node.Path);
                 continue;
             }
-            Position front = current.Position + GetDirectionStep(current.Direction);
-            if (input.Contains(front) && positions[front] >= positions[current.Position])
+            Position front = node.Position + GetDirectionStep(node.Direction);
+            if (input.Contains(front) && !visited.Contains(new PositionAndDirection(front, node.Direction)))
             {
-                queue.AddFirst(current with { Position = front });
-                positions[front] = Math.Min(positions[front], positions[current.Position] + 1);
+                queue.Enqueue(new Node(front, node.Direction, node.Cost + 1, [..node.Path, front]));
             }
-            Position right = current.Position + GetDirectionStep(RotateClockwise(current.Direction));
-            if (input.Contains(right) && positions[right] >= positions[current.Position])
+            Position left = node.Position + GetDirectionStep(RotateCounterClockwise(node.Direction));
+            if (input.Contains(left) && !visited.Contains(new PositionAndDirection(left, RotateCounterClockwise(node.Direction))))
             {
-                queue.AddLast(new PositionAndDirection(right, RotateClockwise(current.Direction)));
-                positions[right] = Math.Min(positions[right], positions[current.Position] + 1001);
+                queue.Enqueue(new Node(left, RotateCounterClockwise(node.Direction), node.Cost + 1001, [..node.Path, left]));
             }
-            Position left = current.Position + GetDirectionStep(RotateCounterClockwise(current.Direction));
-            if (input.Contains(left) && positions[left] >= positions[current.Position])
+            Position right = node.Position + GetDirectionStep(RotateClockwise(node.Direction));
+            if (input.Contains(right) && !visited.Contains(new PositionAndDirection(right, RotateClockwise(node.Direction))))
             {
-                queue.AddLast(new PositionAndDirection(left, RotateCounterClockwise(current.Direction)));
-                positions[left] = Math.Min(positions[left], positions[current.Position] + 1001);
+                queue.Enqueue(new Node(right, RotateClockwise(node.Direction), node.Cost + 1001, [..node.Path, right]));
             }
         }
-        return positions[end];
-    }
-
-    private static List<Position> MultiDijkstra(List<Position> input, Position start, Position end)
-    {
-        HashSet<Position> result = [start, end];
-        long best = Dijkstra(input, start, end, Direction.Right, out _);
-        foreach (Position position in input)
-        {
-            if (position == start || position == end) continue;
-            long l1 = Dijkstra(input, start, position, Direction.Right, out Direction direction);
-            long l2 = Dijkstra(input, position, end, direction, out _);
-            if (l1 + l2 == best)
-            {
-                result.Add(position);
-            }
-            // Heuristic: Only rerun if we're reasonably close.
-            else if (l1 + l2 + 3000 > best)
-            {
-                // Rerun the second Dijkstra for cases where we have a tile accessible from two sides.
-                l2 = Dijkstra(input, position, end, GetOpposite(direction), out _);
-                if (l1 + l2 == best)
-                {
-                    result.Add(position);
-                }
-            }
-        }
-        return result.ToList();
+        return (maxCost, paths);
     }
 
     private static Position GetDirectionStep(Direction direction)
@@ -163,26 +136,11 @@ public class Day16() : Day(16)
         };
     }
 
-    private static Direction GetOpposite(Direction direction)
+    private record Node(Position Position, Direction Direction, long Cost, List<Position> Path)
     {
-        return direction switch
+        public PositionAndDirection ToPositionAndDirection()
         {
-            Direction.Up => Direction.Down,
-            Direction.Down => Direction.Up,
-            Direction.Left => Direction.Right,
-            Direction.Right => Direction.Left
-        };
-    }
-
-    private static Dictionary<Position, long> InitDijkstra(List<Position> input, Position start)
-    {
-        Dictionary<Position, long> positions = new();
-        foreach (Position position in input)
-        {
-            // We use long.MaxValue / 2 to avoid an overflow.
-            positions[position] = long.MaxValue / 2;
+            return new PositionAndDirection(Position, Direction);
         }
-        positions[start] = 0;
-        return positions;
     }
 }
