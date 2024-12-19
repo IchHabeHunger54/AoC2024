@@ -1,6 +1,6 @@
 ﻿namespace AoC2024.graph;
 
-public record Edge<T>(Node<T> From, Node<T> To, int Weight, bool OneWay)
+public record Edge<T>(Node<T> From, Node<T> To, int Weight, bool OneWay) where T : IComparable<T>
 {
     public virtual bool Equals(Edge<T>? other)
     {
